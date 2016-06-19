@@ -1,0 +1,24 @@
+{
+  "name": "ga-slackbot",
+  "private": true,
+  "version": "0.0.0",
+  "description": "The GA-Slacbot",
+  "main": "app/index.js",
+  "scripts": {
+    "start": "node -r dotenv/config app/index.js"
+  },
+  "tests": "mocha",
+  "license": "ISC",
+  "dependencies": {
+    "botkit": "^0.2.0",
+    "dotenv": "^2.0.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-jscs": "^3.0.2",
+    "gulp-jshint": "^2.0.1",
+    "jscs": "^3.0.4",
+    "jshint": "^2.9.2",
+    "jshint-stylish": "^2.2.0"
+  }
+}
