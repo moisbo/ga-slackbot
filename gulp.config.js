@@ -4,7 +4,7 @@ module.exports = function () {
     return  {
         alljs: [
             './app/**/*.js',
-            './*.js',
+            './test/*.js',
             './settings.json'
         ],
         ignoreFiles: [

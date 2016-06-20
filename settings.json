@@ -1,0 +1,10 @@
+{
+    "twitter":{
+        "search": "https://api.twitter.com/1.1/search/tweets.json"
+    },
+    "bot":{
+        "responses":[
+            {"hello": ["howdy", "hi", "sup"]}
+        ]
+    }
+}
