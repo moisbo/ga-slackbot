@@ -1,10 +1,10 @@
 {
+    "dev": true,
     "twitter":{
         "search": "https://api.twitter.com/1.1/search/tweets.json"
     },
     "bot":{
-        "responses":[
-            {"hello": ["howdy", "hi", "sup"]}
-        ]
+        "hellos":["hello", "howdy", "sup", "hey", "hi"],
+        "mentions":["direct_mention", "mention", "direct_message"]        
     }
 }

@@ -10,9 +10,12 @@ describe('search some tweets', function () {
     });
 
     it('should do a search', function (done) {
-        tweets.search('trump', function (search) {
-            assert.notEqual(search, {});
-            done();
-        }); 
+        tweets
+            .search('trump')
+            .then(function (search) {
+                assert.notEqual(search, {});
+                done();
+            })
+            .catch(console.log);
     });
-})
+});

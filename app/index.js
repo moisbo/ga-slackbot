@@ -1,11 +1,24 @@
 'use strict';
 
-var Botkit = require('botkit');
-var controller = Botkit.slackbot();
+const settings = require('../settings.json');
+const Botkit = require('botkit');
+const controller = Botkit.slackbot();
+const util = require('./util');
+const questions = require('./questions')();
 
+var channels = {};
+var users = {};
+var token = null;
+
+if(settings.dev){
+    token = process.env.SLACKBOT_TOKEN_MOISBO
+}else{
+    token = process.env.SLACKBOT_TOKEN_GA_JS
+}
 var bot = controller.spawn({
-  token: process.env.SLACKBOT_TOKEN
+  token: token
 });
+
 
 bot.startRTM(function(error, whichBot, payload) {
   if (error) {
@@ -14,23 +27,13 @@ bot.startRTM(function(error, whichBot, payload) {
 });
 
 bot.api.channels.list({'exclude_archived' : 1}, function (err, res) {  
-    console.log(res);
+    channels.list = res;
+});
+bot.api.users.list({'exclude_archived' : 1}, function (err, res) {  
+    users = res;
 });
 
-controller.hears(['hello'], ['mention'], function(whichBot, message) {
-  whichBot.reply(message, 'Did you say my name?');
-});
-
-controller.hears(['.'], ['direct_mention'], function(whichBot, message) {
-  whichBot.reply(message, 'How can I help?');
-});
-
-controller.on('slash_command',function(whichBot, message) {
-    whichBot.replyPublic(message,'Everyone can see this part of the slash command');
-    whichBot.replyPrivate(message,'Only the person who used the slash command can see this.');
-});
-
-controller.hears(['pizzatime'], ['mention'], function(bot,message) {
+controller.hears(['pizzatime'], settings.bot.mentions, function(bot,message) {
     let askFlavor = function(response, convo) {
       convo.ask('What flavor of pizza do you want?', function(response, convo) {
         convo.say('Awesome.');
@@ -62,18 +65,22 @@ controller.hears(['pizzatime'], ['mention'], function(bot,message) {
     bot.startConversation(message, askFlavor);
 });
 
-controller.hears(['what is my name', 'who am i'], 'direct_message,direct_mention,mention', function(bot, message) {
-    controller.storage.users.get(message.user, function(err, user) {
-        if (user && user.name) {
-            bot.reply(message, 'Your name is ' + user.name);
-        }else{
-            bot.startConversation(message, function(err, convo) {
-                if (!err) {
-                    convo.say('I do not know your name yet!');
-                }
-            });
-        }
+controller.hears(['.'], settings.bot.mentions, function(bot, message) {
+    var found = users.members.filter(function (user) {     
+        return  message.user === user.id;
     });
+    var user = found[0];
+    if (user && user.name) {
+        bot.reply(message, settings.bot.hellos[util.random(5)] + ' ' + user.name );
+        //start with random question
+        bot.startConversation(message, questions[util.random(questions.length-1)].q);
+    }else{
+        bot.startConversation(message, function(err, convo) {
+            if (!err) {
+                convo.say('I do not know your name yet!');
+            }
+        });
+    }
 });
 
 

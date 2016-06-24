@@ -6,7 +6,5 @@ This slackbot was made for a class in General Assembly
 
 A slackbot that connects to twitter api and responds with donald trump jokes...
 
-
-
-
+It wants to talk to you, entertain you, he is somewhat lonely
 
