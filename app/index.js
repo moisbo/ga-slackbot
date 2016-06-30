@@ -53,8 +53,6 @@ controller.hears(['help'], settings.bot.mentions, (bot, message) => {
 });
 
 controller.hears(['.'], settings.bot.mentions, (bot, message) => {
-    //find in members
-    console.log('another mention');
     var thisChannel = message.channel;
     var found = users.members.filter( (user) => {     
         return  message.user === user.id;
@@ -146,7 +144,7 @@ controller.hears(['.'], settings.bot.mentions, (bot, message) => {
                         
                         if (convo.status === 'stopped') {
                             console.log('convo stopped');
-                            bot.say({text: 'Ok. see you next time', channel: thisChannel});
+                            bot.say({text: 'Ok. See you next time', channel: thisChannel});
                         }else{           
                             bot.say({text: 'I am really tired, We\'ll continue this some other time...', channel: thisChannel});
                             console.log(convo.status);
