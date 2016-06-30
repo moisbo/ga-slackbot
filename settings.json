@@ -1,10 +1,13 @@
 {
     "dev": true,
-    "twitter":{
-        "search": "https://api.twitter.com/1.1/search/tweets.json"
-    },
     "bot":{
-        "hellos":["hello", "howdy", "sup", "hey", "hi"],
-        "mentions":["direct_mention", "mention", "direct_message"]        
+        "hellos":["hello", "howdy", "sup", "hey", "hi", "whadup", "yeah?"],
+        "mentions": ["direct_mention", "mention", "direct_message"],
+        "yes":"(yes)|(yah)|(yep)|(yeah)|(eys)|(sey)|(ok)|(sure)|(yup)",
+        "help": ["news", "/", "help"],
+        "iam": "I am a bot that will try to give you the must updated news with twitter:"
+    },
+    "user":{
+        "introductions": ["who are you", "what are you", "can you tell me about yourself"]
     }
 }
