@@ -1,5 +1,5 @@
 {
-    "dev": true,
+    "dev": false,
     "bot":{
         "hellos":["hello", "howdy", "sup", "hey", "hi", "whadup", "yeah?"],
         "mentions": ["direct_mention", "mention", "direct_message"],
