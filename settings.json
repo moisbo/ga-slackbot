@@ -4,10 +4,9 @@
         "hellos":["hello", "howdy", "sup", "hey", "hi", "whadup", "yeah?"],
         "mentions": ["direct_mention", "mention", "direct_message"],
         "yes":"(yes)|(yah)|(yep)|(yeah)|(eys)|(sey)|(ok)|(sure)|(yup)",
-        "help": ["news", "/", "help"],
-        "iam": "I am a bot that will try to give you the must updated news with twitter:"
-    },
-    "user":{
-        "introductions": ["who are you", "what are you", "can you tell me about yourself"]
+        "help": ["tweets: Tell me 'tweets' and I will give you the tweets you want", 
+                "trends: Tell me 'trends' and I will give you the worldwide trends", 
+                "help: Tell me 'help' and I will display the help menu"],
+        "iam": "I am a bot that search and give you tweets and trending topics"
     }
 }

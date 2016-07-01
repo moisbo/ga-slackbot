@@ -11,16 +11,17 @@ var users = {};
 var token = null;
 
 if(settings.dev){
+    //A test environment in which uses my own slackbot group
     require('dotenv').config();
-    token = process.env.SLACKBOT_TOKEN_MOISBO
+    token = process.env.SLACKBOT_TOKEN_MOISBO;
 }else{
-    token = process.env.SLACKBOT_TOKEN_GA_JS
+    token = process.env.SLACKBOT_TOKEN_GA_JS;
 }
 var bot = controller.spawn({
   token: token
 });
 
-bot.startRTM((error, whichBot, payload) => {
+bot.startRTM((error) => {
   if (error) {
     throw new Error('Could not connect to Slack');
   }
@@ -35,24 +36,25 @@ bot.api.users.list({'exclude_archived' : 1}, (err, res) => {
 });
 
 controller.hears(['help'], settings.bot.mentions, (bot, message) => {    
-    settings.bot.help.forEach((h, i)=>{
+    bot.reply(message, "Hi I am a bot and I can do these commands");
+    settings.bot.help.forEach((h, i) => {
         bot.reply(message, i+1 + '. ' + h);
     });
     let msg = {
-      text: "Help Menu:",
+      text: "This bot is powered by:",
       "attachments": [
             {
-                "fallback": "This bot is powered by Twitter",
-                "title": "This bot is powered by Twitter",
+                "fallback": "Twitter",
+                "title": "Twitter",
                 "image_url": "https://g.twimg.com/Twitter_logo_blue.png",
                 "color": "#764FA5"
             }
         ]   
-    }
+    };
     bot.reply(message, msg);
 });
 
-controller.hears(['.'], settings.bot.mentions, (bot, message) => {
+controller.hears(['tweets'], settings.bot.mentions, (bot, message) => {
     var thisChannel = message.channel;
     var found = users.members.filter( (user) => {     
         return  message.user === user.id;
@@ -64,12 +66,14 @@ controller.hears(['.'], settings.bot.mentions, (bot, message) => {
             if(!user){
                 console.log('new user');
                 user = { id: userFound.id, name: userFound.name };                
-                controller.storage.users.save(user, (err, id) => {
-                    bot.reply(message, 'Hi, ' + user.name + ' let me introduce myself.')
-                    bot.reply(message, settings.bot.iam);
-                    settings.bot.help.forEach((h, i)=>{
-                        bot.reply(message, i+1 + '. ' + h);
-                    })
+                controller.storage.users.save(user, (err) => {
+                    if(!err){
+                        bot.reply(message, 'Hi, ' + user.name + ' first let me introduce myself.');
+                        bot.reply(message, settings.bot.iam);
+                        settings.bot.help.forEach((h, i)=>{
+                            bot.reply(message, i+1 + '. ' + h);
+                        });
+                    }
                 });                  
             }else{
                 console.log('old user');
@@ -90,8 +94,7 @@ controller.hears(['.'], settings.bot.mentions, (bot, message) => {
                 
                     let whatNews = (response, convo) => {
                         convo.ask('What are you interested about?', (response, convo) => {
-                            //go to twitter find the first tweet about response.text and say it  
-                            console.log('whatNews')     
+                            console.log('whatNews');   
                             if(response.text){                
                                 searchTweets(response, convo);           
                                 //convo.next();     
@@ -103,17 +106,17 @@ controller.hears(['.'], settings.bot.mentions, (bot, message) => {
                         });
                     };
 
-                    let searchTweets = (response, convo) => {
-                        //console.log(response.text);
+                    let searchTweets = (response, convo) => {                                                
                         if(response.text === oldNews){
                             isOldNews++;
                         }else{
                             oldNews = response.text;
                         }
+                        //go to twitter find the first tweet about response.text and say it                          
                         tweet
                             .search(oldNews, isOldNews)
                             .then( (pseudoNews) => { 
-                                console.log('searchTweets')
+                                console.log('searchTweets');
                                 convo.say(pseudoNews);                 
                                 askNext(response, convo);
                                 convo.next();
@@ -127,7 +130,7 @@ controller.hears(['.'], settings.bot.mentions, (bot, message) => {
 
                     let askNext = (response, convo) => {
                         var continueText = response.text;
-                        convo.ask('Do you want more news about \''+ continueText + '\'?', (response, convo) => {          
+                        convo.ask('Do you want more tweets about \''+ continueText + '\'?', (response, convo) => {          
                             if(util.yes(response.text)){
                                 console.log('askNext');
                                 response.text = continueText;                
@@ -146,6 +149,7 @@ controller.hears(['.'], settings.bot.mentions, (bot, message) => {
                             console.log('convo stopped');
                             bot.say({text: 'Ok. See you next time', channel: thisChannel});
                         }else{           
+                            //Sometimes the API just stops!!
                             bot.say({text: 'I am really tired, We\'ll continue this some other time...', channel: thisChannel});
                             console.log(convo.status);
                         }
@@ -156,3 +160,43 @@ controller.hears(['.'], settings.bot.mentions, (bot, message) => {
     }
 });
         
+controller.hears(['trends'], settings.bot.mentions, (bot, message) => {
+    var found = users.members.filter( (user) => {     
+        return  message.user === user.id;
+    });
+    var userFound = found[0];
+    if (userFound && userFound.name) {
+        //find in store
+        controller.storage.users.get(userFound.id, (err, user) => { 
+            if(!user){
+                console.log('new user');
+                user = { id: userFound.id, name: userFound.name };                
+                controller.storage.users.save(user, (err) => {
+                    if(!err){
+                        bot.reply(message, 'Hi, ' + user.name + ' first let me introduce myself.');
+                        bot.reply(message, settings.bot.iam);
+                        settings.bot.help.forEach((h, i)=>{
+                            bot.reply(message, i+1 + '. ' + h);
+                        });
+                    }
+                });                  
+            }else{
+                console.log('old user');
+                bot.reply(message, settings.bot.hellos[util.random(5)] + ' ' + user.name );
+                tweet
+                    .trends("1")
+                    .then( (trends) => { 
+                        let msg = {
+                            text: "These are the trending topics Worldwide",
+                            "attachments": trends
+                        };
+                        bot.reply(message, msg); 
+                    })
+                    .catch(()=>{
+                        bot.reply(message, 'No trends for you!');
+                    });
+               
+            }
+        });
+    }
+});
